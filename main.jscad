@@ -21,7 +21,7 @@ function lid_arm() {
 
 	var armNodes = [
 		CAG.circle({center: [0, 0], radius: 7}),
-		CAG.circle({center: [50, 0], radius: 2}),
+		CAG.circle({center: [50, 0], radius: 3}),
 	];
 
 	return chain_hull(armNodes).subtract(head_cutout);
