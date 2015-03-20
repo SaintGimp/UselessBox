@@ -59,6 +59,7 @@
 <layer number="96" name="Values" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="97" name="Info" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="98" name="Guide" color="6" fill="1" visible="yes" active="yes"/>
+<layer number="99" name="SpiceOrder" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="100" name="Muster" color="7" fill="1" visible="no" active="no"/>
 <layer number="101" name="Patch_Top" color="12" fill="4" visible="yes" active="yes"/>
 <layer number="102" name="Vscore" color="7" fill="1" visible="yes" active="yes"/>
@@ -72,6 +73,7 @@
 <layer number="110" name="fp0" color="7" fill="1" visible="no" active="yes"/>
 <layer number="111" name="LPC17xx" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="112" name="tSilk" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="113" name="IDFDebug" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="116" name="Patch_BOT" color="9" fill="4" visible="yes" active="yes"/>
 <layer number="121" name="_tsilk" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="122" name="_bsilk" color="7" fill="1" visible="yes" active="yes"/>
@@ -121,6 +123,7 @@
 <layer number="250" name="Descript" color="7" fill="1" visible="no" active="no"/>
 <layer number="251" name="SMDround" color="7" fill="1" visible="no" active="no"/>
 <layer number="254" name="cooling" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="255" name="routoute" color="7" fill="1" visible="yes" active="yes"/>
 </layers>
 <schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">
 <libraries>
@@ -161,32 +164,12 @@
 <description>&lt;b&gt;Saint Gimp's Devices&lt;/b&gt;&lt;p&gt;
 &lt;author&gt;Created by saintgimp@hotmail.com&lt;/author&gt;</description>
 <packages>
-<package name="CAPACITOR-5MM">
-<pad name="1" x="-2.54" y="0" drill="0.8" diameter="1.778"/>
-<pad name="2" x="2.54" y="0" drill="0.8" diameter="1.778"/>
-<text x="-1.016" y="1.524" size="1.016" layer="25">&gt;Name</text>
-<text x="-1.905" y="-2.54" size="1.016" layer="27">&gt;Value</text>
-<wire x1="-0.254" y1="0.635" x2="-0.254" y2="0" width="0.2032" layer="21"/>
-<wire x1="-0.254" y1="0" x2="-0.254" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="0.254" y1="0.635" x2="0.254" y2="0" width="0.2032" layer="21"/>
-<wire x1="0.254" y1="0" x2="0.254" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="-0.254" y1="0" x2="-1.27" y2="0" width="0.127" layer="21"/>
-<wire x1="0.254" y1="0" x2="1.27" y2="0" width="0.127" layer="21"/>
-<wire x1="-3.81" y1="1.016" x2="-3.556" y2="1.27" width="0.127" layer="21" curve="-90"/>
-<wire x1="-3.556" y1="1.27" x2="3.556" y2="1.27" width="0.127" layer="21"/>
-<wire x1="3.556" y1="1.27" x2="3.81" y2="1.016" width="0.127" layer="21" curve="-90"/>
-<wire x1="3.81" y1="1.016" x2="3.81" y2="-1.016" width="0.127" layer="21"/>
-<wire x1="3.81" y1="-1.016" x2="3.556" y2="-1.27" width="0.127" layer="21" curve="-90"/>
-<wire x1="3.556" y1="-1.27" x2="-3.556" y2="-1.27" width="0.127" layer="21"/>
-<wire x1="-3.556" y1="-1.27" x2="-3.81" y2="-1.016" width="0.127" layer="21" curve="-90"/>
-<wire x1="-3.81" y1="-1.016" x2="-3.81" y2="1.016" width="0.127" layer="21"/>
-</package>
 <package name="CAPACITOR-2.5MM">
 <wire x1="1.0922" y1="0.635" x2="1.0922" y2="-0.635" width="0.2032" layer="21"/>
-<pad name="1" x="0" y="0" drill="0.8" diameter="1.778"/>
-<pad name="2" x="2.54" y="0" drill="0.8" diameter="1.778"/>
-<text x="0.254" y="1.524" size="1.016" layer="25">&gt;Name</text>
-<text x="-0.508" y="-2.54" size="1.016" layer="27">&gt;Value</text>
+<pad name="1" x="0" y="0" drill="0.8"/>
+<pad name="2" x="2.54" y="0" drill="0.8"/>
+<text x="0.254" y="1.524" size="0.8128" layer="25">&gt;Name</text>
+<text x="-0.508" y="-2.286" size="0.8128" layer="27">&gt;Value</text>
 <wire x1="1.4478" y1="0.635" x2="1.4478" y2="-0.635" width="0.2032" layer="21"/>
 <wire x1="-1.27" y1="1.016" x2="-1.016" y2="1.27" width="0.127" layer="21" curve="-90"/>
 <wire x1="-1.016" y1="1.27" x2="3.556" y2="1.27" width="0.127" layer="21"/>
@@ -825,6 +808,26 @@ grid 5 mm, diameter 14 mm</description>
 <rectangle x1="-16.129" y1="2.159" x2="-15.24" y2="2.921" layer="21"/>
 <rectangle x1="-16.129" y1="-2.921" x2="-15.24" y2="-2.159" layer="21"/>
 </package>
+<package name="CAPACITOR-5MM">
+<pad name="1" x="-2.54" y="0" drill="0.8"/>
+<pad name="2" x="2.54" y="0" drill="0.8"/>
+<text x="-1.016" y="1.524" size="0.8128" layer="25">&gt;Name</text>
+<text x="-1.905" y="-2.286" size="0.8128" layer="27">&gt;Value</text>
+<wire x1="-0.254" y1="0.635" x2="-0.254" y2="0" width="0.2032" layer="21"/>
+<wire x1="-0.254" y1="0" x2="-0.254" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="0.254" y1="0.635" x2="0.254" y2="0" width="0.2032" layer="21"/>
+<wire x1="0.254" y1="0" x2="0.254" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="-0.254" y1="0" x2="-1.27" y2="0" width="0.127" layer="21"/>
+<wire x1="0.254" y1="0" x2="1.27" y2="0" width="0.127" layer="21"/>
+<wire x1="-3.81" y1="1.016" x2="-3.556" y2="1.27" width="0.127" layer="21" curve="-90"/>
+<wire x1="-3.556" y1="1.27" x2="3.556" y2="1.27" width="0.127" layer="21"/>
+<wire x1="3.556" y1="1.27" x2="3.81" y2="1.016" width="0.127" layer="21" curve="-90"/>
+<wire x1="3.81" y1="1.016" x2="3.81" y2="-1.016" width="0.127" layer="21"/>
+<wire x1="3.81" y1="-1.016" x2="3.556" y2="-1.27" width="0.127" layer="21" curve="-90"/>
+<wire x1="3.556" y1="-1.27" x2="-3.556" y2="-1.27" width="0.127" layer="21"/>
+<wire x1="-3.556" y1="-1.27" x2="-3.81" y2="-1.016" width="0.127" layer="21" curve="-90"/>
+<wire x1="-3.81" y1="-1.016" x2="-3.81" y2="1.016" width="0.127" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="CAPACITOR">
@@ -1438,8 +1441,8 @@ SMT- SWCH-08247</description>
 <parts>
 <part name="ATMEGA328P" library="SaintGimp" deviceset="ATMEGA328P-PU" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
-<part name="C1" library="SaintGimp" deviceset="CAPACITOR-*" device="2.5MM" value="1uF"/>
-<part name="C2" library="SaintGimp" deviceset="CAPACITOR-*" device="2.5MM" value="1uF"/>
+<part name="C1" library="SaintGimp" deviceset="CAPACITOR-*" device="5MM" value="1uF"/>
+<part name="C2" library="SaintGimp" deviceset="CAPACITOR-*" device="5MM" value="1uF"/>
 <part name="GND2" library="supply1" deviceset="GND" device=""/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
 <part name="ICSP" library="SaintGimp" deviceset="AVRISP" device="-6"/>
