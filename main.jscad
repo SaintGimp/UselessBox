@@ -21,13 +21,13 @@ function lid_arm() {
 
 	var armNodes = [
 		CAG.circle({center: [0, 0], radius: 7}),
-		CAG.circle({center: [50, 0], radius: 3}),
+		CAG.circle({center: [37, 0], radius: 3}),
 	];
 
 	return chain_hull(armNodes).subtract(head_cutout);
 }
 
-function server_cutout() {
+function servo_cutout() {
 	body = CAG.rectangle({center: [0, 0], radius: [10, 20]});
 	holes = [
 		CAG.circle({center: [5, 24.4], radius: 1.5}),
@@ -40,45 +40,50 @@ function server_cutout() {
 }
 
 function lid_servo_bracket() {
-	var width = 40;
+	var width = 35;
 	var height = 70;
 
 	var bracket = CAG.rectangle({center: [width/2, height/2], radius: [width/2, height/2]});
-	var cutout = server_cutout().translate([10, 28]);
-
-	return bracket.subtract(cutout);
+	var cutout = servo_cutout().translate([10, 28]);
+	var limitSwitchCutout = CAG.rectangle({center: [width/2, height/2], radius: [7, height/4]})
+		.translate([width/2, 0]);
+	return bracket.subtract([cutout, limitSwitchCutout]);
 }
 
 function switch_servo_bracket() {
-	var width = 64;
+	var width = 87;
 	var height = 60;
 
 	var bracket = CAG.rectangle({center: [width/2, height/2], radius: [width/2, height/2]});
-	var cutout = server_cutout()
+	var cutout = servo_cutout()
 		.rotateZ(90)
-		.translate([width / 2 - 3, 10]);
+		.translate([29, 10]);
 
 	return bracket.subtract(cutout);
 }
 
 function lid_bracket_brace() {
-	var width = 36;
+	var width = 32;
 	var height = 70;
-	return CAG.rectangle({center: [width/2, height/2], radius: [width / 2, height / 2]});
+	
+	var brace = CAG.rectangle({center: [width/2, height/2], radius: [width / 2, height / 2]});
+	var hole1 = CAG.circle({center: [26, 43], radius: 1.25});
+	var hole2 = CAG.circle({center: [16.4, 43], radius: 1.25});
+	return brace.subtract([hole1, hole2]);
 }
 
 function servo_bracket_brace() {
-	var width = 36;
+	var width = 37.8;
 	var height = 60;
 	return CAG.rectangle({center: [width/2, height/2], radius: [width / 2, height / 2]});
 }
 
 function main() {
-	return switch_arm().translate([7, -6])
-		.union(lid_arm().translate([50, 20]))
+	return switch_arm().translate([-17, -6])
+		.union(lid_arm().translate([47, 20]))
 		.union(lid_servo_bracket().translate([66, 30]))
-		.union(switch_servo_bracket().translate([0, 30]))
-		.union(lid_bracket_brace().translate([-40, 30]))
-		.union(servo_bracket_brace().translate([-80, 30]));
+		.union(switch_servo_bracket().translate([-23, 30]))
+		.union(lid_bracket_brace().translate([-63, 30]))
+		.union(servo_bracket_brace().translate([-103, 30]));
 
 }
