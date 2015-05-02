@@ -1,10 +1,10 @@
 // Based on code at http://www.lamja.com/?p=451
 
 // Fuses to wipe EEPROM on upload:
-//avrdude -c usbtiny -p atmega328p -U lfuse:w:0xff:m -U hfuse:w:0xde:m -U efuse:w:0x05:m
+// avrdude -c usbtiny -p atmega328p -U lfuse:w:0xff:m -U hfuse:w:0xde:m -U efuse:w:0x05:m
 
 // Fuses to prevent loss of EEPROM on upload:
-//avrdude -c usbtiny -p atmega328p -U lfuse:w:0xff:m -U hfuse:w:0xd6:m -U efuse:w:0x05:m
+// avrdude -c usbtiny -p atmega328p -U lfuse:w:0xff:m -U hfuse:w:0xd6:m -U efuse:w:0x05:m
 
 #include <Servo.h> 
 #include <EEPROM.h>
@@ -71,12 +71,21 @@ void setup()
   pinMode(buttonPin, INPUT_PULLUP);     
   modeButton.attach(buttonPin);
   modeButton.interval(100);
-  
+    
+  randomSeed(getSeedFromAnalogPin(A5));
+
   digitalWrite(6, HIGH);  // turn on motor power
-  
-  randomSeed(analogRead(A5));
 }  
-  
+
+unsigned long getSeedFromAnalogPin(int pin)
+{
+  // From http://www.utopiamechanicus.com/article/better-arduino-random-numbers/
+  unsigned long seed=0, count=32;
+  while (--count)
+    seed = (seed<<1) | (analogRead(pin)&1);
+  return seed;
+}
+
 void loop() 
 { 
   if (modeButton.update() && modeButton.read() == LOW)
@@ -139,6 +148,7 @@ void RunSequence()
   if (sequence == 6) Sequence6();
   if (sequence == 7) Sequence7();
   if (sequence == 8) Sequence8();
+  if (sequence == 9) Sequence9();
   if (sequence == 10) Sequence10();
   if (sequence > 10) DefaultSequence();
     
