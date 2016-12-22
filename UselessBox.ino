@@ -30,7 +30,7 @@ Servo switchServo;
 Servo lidServo;  
                  
 int lidFrom = 1200; // adjustable
-int lidTo = 1900; // fixed
+int lidTo = 1850; // fixed
 int lidRange = lidTo - lidFrom;
 
 int switchFrom = 1800; // fixed
@@ -74,16 +74,27 @@ void setup()
     
   randomSeed(getSeedFromAnalogPin(A5));
 
+  delay(20);
   digitalWrite(6, HIGH);  // turn on motor power
 }  
 
 unsigned long getSeedFromAnalogPin(int pin)
 {
   // From http://www.utopiamechanicus.com/article/better-arduino-random-numbers/
-  unsigned long seed=0, count=32;
-  while (--count)
-    seed = (seed<<1) | (analogRead(pin)&1);
-  return seed;
+  unsigned long seed=0, noOfBits=32, limit=99;
+  int bit0=0, bit1=0;
+  while (noOfBits--)
+  {
+    for (int i=0;i<limit;++i)
+    {
+      bit0=analogRead(pin)&1;
+      bit1=analogRead(pin)&1;
+      if (bit1!=bit0)
+        break;
+    }
+    seed = (seed<<1) | bit1;
+  }
+  return seed;  
 }
 
 void loop() 
@@ -137,7 +148,7 @@ void loop()
 
 void RunSequence()
 {
-  int sequence = random(0, 20);
+  int sequence = random(0, 22);
   
   if (sequence == 0) Sequence0();
   if (sequence == 1) Sequence1();
@@ -150,9 +161,10 @@ void RunSequence()
   if (sequence == 8) Sequence8();
   if (sequence == 9) Sequence9();
   if (sequence == 10) Sequence10();
-  if (sequence > 10) DefaultSequence();
+  if (sequence == 11) Sequence11();
+  if (sequence > 11) DefaultSequence();
     
-  delay(3000);
+  delay(2000);
 }
 
 void AdjustLid()
@@ -170,15 +182,13 @@ void AdjustSwitch()
 // Plain old open the lid, press the switch, close the lid
 void DefaultSequence()
 {
-  delay(50);
   Sweep(lidServo, lidFrom, lidTo, 1);
-  delay(200);
+  delay(100);
   Sweep(switchServo, switchFrom, switchTo, 1);
-  delay(300);
+  delay(275);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(150);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence0()
@@ -187,7 +197,6 @@ void Sequence0()
   int lidMid4 = lidFrom  + lidRange * 0.60;
   int switchMid = switchTo + switchRange * 0.57;
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidMid, 3000);
   delay(1000);
   Sweep(lidServo, lidMid, lidMid4, 500);
@@ -195,7 +204,7 @@ void Sequence0()
   Sweep(lidServo, lidMid4, lidTo, 1000);
   Sweep(switchServo, switchFrom, switchMid, 1800);
   Sweep(switchServo, switchMid, switchTo, 500);
-  delay(100);
+  delay(110);
   Sweep(switchServo, switchTo, switchFrom, 500);
   Sweep(lidServo, lidTo, lidFrom, 500);
 }
@@ -208,28 +217,27 @@ void Sequence1()
   int lidMid4 = lidFrom  + lidRange * 0.60;
   int switchMid = switchTo + switchRange * 0.57;
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidMid2, 3000);
   Sweep(lidServo, lidMid2, lidMid3, 1);
-  delay(120);
+  delay(100);
   Sweep(lidServo, lidMid3, lidMid2, 1);
-  delay(120);
+  delay(90);
   Sweep(lidServo, lidMid2, lidMid3, 1);
-  delay(120);
+  delay(90);
   Sweep(lidServo, lidMid3, lidMid2, 1);
-  delay(120);
+  delay(90);
   Sweep(lidServo, lidMid2, lidMid3, 1);
-  delay(120);
+  delay(90);
   Sweep(lidServo, lidMid3, lidMid2, 1);
-  delay(120);
+  delay(300);
   Sweep(lidServo, lidMid2, lidMid4, 3000);
   Sweep(lidServo, lidMid4, lidMid, 3000);
   delay(1000);
   Sweep(lidServo, lidMid, lidTo, 1000);
   Sweep(switchServo, switchFrom, switchMid, 1800);
-  Sweep(switchServo, switchMid, switchTo, 500);
-  delay(100);
-  Sweep(switchServo, switchTo, switchFrom, 500);
+  Sweep(switchServo, switchMid, switchTo, 200);
+  delay(110);
+  Sweep(switchServo, switchTo, switchFrom, 200);
   Sweep(lidServo, lidTo, lidFrom, 500);
 }
 
@@ -237,79 +245,73 @@ void Sequence2()
 {
   int switchMid2 = switchTo + switchRange * 0.28;   // Almost on the switch
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidTo, 1);
   delay(1);
   Sweep(switchServo, switchFrom, switchMid2, 1);
   delay(450);
   Sweep(switchServo, switchMid2, switchTo, 30000);
-  delay(1);
+  delay(100);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence3()
 {
-  int switchMid2 = switchTo + switchRange * 0.05;   // Almost on the switch
+  int switchMid2 = switchTo + switchRange * 0.10;   // Almost on the switch
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidTo, 1);
-  delay(200);
+  delay(100);
   Sweep(switchServo, switchFrom, switchTo, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchTo, switchMid2, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchMid2, switchTo, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchTo, switchMid2, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchMid2, switchTo, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchTo, switchMid2, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchMid2, switchTo, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchTo, switchMid2, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchMid2, switchTo, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchTo, switchMid2, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchMid2, switchTo, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchTo, switchMid2, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchMid2, switchTo, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchTo, switchMid2, 1);
-  delay(50);
+  delay(60);
   Sweep(switchServo, switchMid2, switchTo, 1);
-  delay(50);
+  delay(80);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence4()
 {
-  int lidMid4 = lidFrom  + lidRange * 0.85;
+  int lidMid4 = lidFrom  + lidRange * 0.75;
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidTo, 1);
-  delay(200);
+  delay(100);
   Sweep(switchServo, switchFrom, switchTo, 1);
-  delay(450);
+  delay(300);
   Sweep(lidServo, lidTo, lidMid4, 1000);
   delay(2000);
   Sweep(lidServo, lidMid4, lidTo, 1000);
-  delay(2000);
+  delay(1000);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence5()
@@ -318,9 +320,8 @@ void Sequence5()
   int lidMid2 = lidFrom + lidRange * 0.68;
   int lidMid4 = lidFrom  + lidRange * 0.50;
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidMid, 1);
-  delay(200);
+  delay(150);
   Sweep(lidServo, lidMid, lidMid2, 1);
   delay(100);
   Sweep(lidServo, lidMid2, lidMid, 1);
@@ -330,25 +331,23 @@ void Sequence5()
   Sweep(lidServo, lidMid2, lidMid, 1);
   delay(100);
   Sweep(lidServo, lidMid, lidMid4, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidMid4, lidTo, 1);
   delay(1);
   Sweep(switchServo, switchFrom, switchTo, 1);
   delay(450);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence6()
 {
-  int lidMid = lidTo;
-  int lidMid2 = lidFrom + lidRange * 0.68;
-  int lidMid3 = lidFrom + lidRange * 0.77;
-  int lidMid4 = lidFrom  + lidRange * 0.50;
+  int lidMid = lidFrom + lidRange * 0.85;
+  int lidMid2 = lidFrom + lidRange * 0.6;
+  int lidMid3 = lidFrom + lidRange * 0.7;
+  int lidMid4 = lidFrom  + lidRange * 0.40;
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidMid, 1);
   delay(200);
   Sweep(lidServo, lidMid, lidMid2, 1);
@@ -386,11 +385,10 @@ void Sequence6()
   Sweep(lidServo, lidMid4, lidTo, 1);
   delay(1);
   Sweep(switchServo, switchFrom, switchTo, 1);
-  delay(450);
+  delay(250);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence7()
@@ -399,9 +397,8 @@ void Sequence7()
   int lidMid2 = lidFrom + lidRange * 0.68;
   int lidMid3 = lidFrom + lidRange * 0.77;
 
-  delay(50);
   Sweep(lidServo, lidFrom, lidMid, 2000);
-  delay(500);
+  delay(400);
   Sweep(lidServo, lidMid, lidMid2, 1000);
   delay(1);
   Sweep(lidServo, lidMid2, lidMid3, 1);
@@ -441,33 +438,29 @@ void Sequence7()
   Sweep(lidServo, lidMid, lidTo, 1000);
   delay(1);
   Sweep(switchServo, switchFrom, switchTo, 1);
-  delay(450);
+  delay(250);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence8()
 {
-  delay(1000);
   Sweep(lidServo, lidFrom, lidTo, 30000);
   delay(1);
   Sweep(switchServo, switchFrom, switchTo, 5000);
   delay(1);
   Sweep(switchServo, switchTo, switchFrom, 5000);
-  delay(500);
+  delay(700);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(300);
 }
 
 void Sequence9()
 {
   int switchMid2 = switchTo + switchRange * 0.28;
 
-  delay(100);
   Sweep(lidServo, lidFrom, lidTo, 1);
-  delay(200);
+  delay(100);
   Sweep(switchServo, switchFrom, switchTo, 1);
   delay(1000);
   Sweep(switchServo, switchTo, switchMid2, 1);
@@ -483,18 +476,16 @@ void Sequence9()
   Sweep(switchServo, switchMid2, switchTo, 1);
   delay(110);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(200);
+  delay(100);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
 }
 
 void Sequence10()
 {
   int switchMid2 = switchTo + switchRange * 0.35;
 
-  delay(100);
   Sweep(lidServo, lidFrom, lidTo, 1);
-  delay(200);
+  delay(100);
   Sweep(switchServo, switchFrom, switchTo, 1);
   delay(2000);
   Sweep(switchServo, switchTo, switchMid2, 6000);
@@ -504,7 +495,28 @@ void Sequence10()
   Sweep(switchServo, switchTo, switchFrom, 2000);
   delay(200);
   Sweep(lidServo, lidTo, lidFrom, 1);
-  delay(400);
+}
+
+void Sequence11()
+{
+  int switchMid1 = switchTo + switchRange * 0.60;
+  int switchMid2 = switchTo + switchRange * 0.30;
+
+  Sweep(switchServo, switchFrom, switchMid1, 1000);
+  delay(2000);
+  Sweep(switchServo, switchMid1, switchFrom, 1);
+  delay(1000);
+  Sweep(switchServo, switchFrom, switchMid2, 1000);
+  delay(2000);
+  Sweep(switchServo, switchMid2, switchMid1, 6000);
+  delay(2000);
+  Sweep(lidServo, lidFrom, lidTo, 1);
+  delay(100);
+  Sweep(switchServo, switchMid1, switchTo, 1);
+  delay(250);
+  Sweep(switchServo, switchTo, switchFrom, 1);
+  delay(100);
+  Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
 void Sweep(Servo& servo, int from, int to, int usec)  
