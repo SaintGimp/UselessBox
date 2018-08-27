@@ -5,3 +5,4 @@
 *.pro
 
 Thumbs.db
+.DS_Store

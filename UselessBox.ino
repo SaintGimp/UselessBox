@@ -8,15 +8,18 @@
 
 #include <Servo.h> 
 #include <EEPROM.h>
-#include <Debounce.h>
+#include <avr/eeprom.h>
+#include <Bounce2.h>
 
 const int MODE_NORMAL = 0;
-const int MODE_ADJUST_LID = 1;
-const int MODE_ADJUST_SWITCH = 2;
+const int MODE_INSTALL_ARMS = 1;
+const int MODE_ADJUST_LID = 2;
+const int MODE_ADJUST_SWITCH = 3;
 int mode = 0;
 
 const int EEPROM_LID_FROM = 10;
 const int EEPROM_SWITCH_TO = 20;
+const int EEPROM_RANDOM_CONTEXT = 30;
 
 const int switchServoPin = 8;
 const int lidServoPin = 7;
@@ -24,18 +27,20 @@ const int buttonPin = 2;
 const int ledPin = 3;
 const int potPin = A0;
 
-StableDebounce modeButton = StableDebounce();
+Bounce modeButton = Bounce();
 
 Servo switchServo;
 Servo lidServo;  
                  
-int lidFrom = 1200; // adjustable
+int lidFrom = 0; // adjustable, loaded in setup
 int lidTo = 1850; // fixed
-int lidRange = lidTo - lidFrom;
+int lidRange = 0;
 
 int switchFrom = 1800; // fixed
-int switchTo = 1100; // adjustable
-int switchRange = switchFrom - switchTo;
+int switchTo = 0; // adjustable, loaded in setup
+int switchRange = 0;
+
+unsigned long randomContext;
 
 void setup() 
 { 
@@ -62,7 +67,9 @@ void setup()
     EEPROM.put(EEPROM_SWITCH_TO, switchTo);
     EEPROM.write(511, 87);
   }
-
+  lidRange = lidTo - lidFrom;
+  switchRange = switchFrom - switchTo;
+  
   switchServo.attach(switchServoPin);
   lidServo.attach(lidServoPin);
   switchServo.write(switchFrom);
@@ -71,37 +78,17 @@ void setup()
   pinMode(buttonPin, INPUT_PULLUP);     
   modeButton.attach(buttonPin);
   modeButton.interval(100);
-    
-  randomSeed(getSeedFromAnalogPin(A5));
-
-  delay(20);
+  
+  delay(100);
   digitalWrite(6, HIGH);  // turn on motor power
 }  
 
-unsigned long getSeedFromAnalogPin(int pin)
-{
-  // From http://www.utopiamechanicus.com/article/better-arduino-random-numbers/
-  unsigned long seed=0, noOfBits=32, limit=99;
-  int bit0=0, bit1=0;
-  while (noOfBits--)
-  {
-    for (int i=0;i<limit;++i)
-    {
-      bit0=analogRead(pin)&1;
-      bit1=analogRead(pin)&1;
-      if (bit1!=bit0)
-        break;
-    }
-    seed = (seed<<1) | bit1;
-  }
-  return seed;  
-}
-
 void loop() 
 { 
-  if (modeButton.update() && modeButton.read() == LOW)
+  modeButton.update();
+  if (modeButton.fell())
   {
-    mode = ++mode % 3;
+    mode = ++mode % 4;
 
     if (mode == MODE_NORMAL)
     {
@@ -111,8 +98,15 @@ void loop()
       digitalWrite(ledPin, LOW);
     }
     
+    if (mode == MODE_INSTALL_ARMS)
+    {
+      digitalWrite(ledPin, HIGH);
+    }
+
     if (mode == MODE_ADJUST_LID)
     {
+      digitalWrite(ledPin, LOW);
+      delay(500);
       digitalWrite(ledPin, HIGH);
     }
 
@@ -134,7 +128,12 @@ void loop()
   {
     RunSequence();
   }
-  
+
+  if (mode == MODE_INSTALL_ARMS)
+  {
+    InstallArms();
+  }
+
   if (mode == MODE_ADJUST_LID)
   {
     AdjustLid();
@@ -148,8 +147,8 @@ void loop()
 
 void RunSequence()
 {
-  int sequence = random(0, 22);
-  
+  int sequence = GetRandomNumber(25);
+
   if (sequence == 0) Sequence0();
   if (sequence == 1) Sequence1();
   if (sequence == 2) Sequence2();
@@ -165,6 +164,25 @@ void RunSequence()
   if (sequence > 11) DefaultSequence();
     
   delay(2000);
+}
+
+int GetRandomNumber(int max)
+{
+  // We can get the random context, save it, and load it again next
+  // time so that we don't have to worry about generating a new random
+  // seed every time from hardware.  That seems to give us much better
+  // distributions than trying to read a floating analog pin, etc.
+  
+  unsigned long randomContext = eeprom_read_dword(EEPROM_RANDOM_CONTEXT);
+  int sequence = random_r(&randomContext) % max;
+  eeprom_write_dword(EEPROM_RANDOM_CONTEXT, randomContext);
+  return sequence;
+}
+
+void InstallArms()
+{
+  lidServo.writeMicroseconds(lidTo);
+  switchServo.writeMicroseconds(switchFrom);
 }
 
 void AdjustLid()
@@ -187,7 +205,7 @@ void DefaultSequence()
   Sweep(switchServo, switchFrom, switchTo, 1);
   delay(275);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -252,7 +270,7 @@ void Sequence2()
   Sweep(switchServo, switchMid2, switchTo, 30000);
   delay(100);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -293,7 +311,7 @@ void Sequence3()
   Sweep(switchServo, switchMid2, switchTo, 1);
   delay(80);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -310,7 +328,7 @@ void Sequence4()
   Sweep(lidServo, lidMid4, lidTo, 1000);
   delay(1000);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -337,7 +355,7 @@ void Sequence5()
   Sweep(switchServo, switchFrom, switchTo, 1);
   delay(450);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -387,7 +405,7 @@ void Sequence6()
   Sweep(switchServo, switchFrom, switchTo, 1);
   delay(250);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -440,7 +458,7 @@ void Sequence7()
   Sweep(switchServo, switchFrom, switchTo, 1);
   delay(250);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -476,7 +494,7 @@ void Sequence9()
   Sweep(switchServo, switchMid2, switchTo, 1);
   delay(110);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
@@ -515,7 +533,7 @@ void Sequence11()
   Sweep(switchServo, switchMid1, switchTo, 1);
   delay(250);
   Sweep(switchServo, switchTo, switchFrom, 1);
-  delay(100);
+  delay(120);
   Sweep(lidServo, lidTo, lidFrom, 1);
 }
 
